@@ -1,5 +1,8 @@
 <script>
-
+	/* 
+	Game is in working condition. The deck doesn't reshuffle after all the cards have been drawn, so I'm sure it's
+	possible to have no winner.
+	*/
 	var win = false;	
 
 	alert("Welcome to the Crazy Eights game! \n\nYou can play any card from your hand with the same rank or suit as" + 
@@ -13,7 +16,7 @@
 			return this.cards.length;
 		}
 		this.init = function() {                      // This function fills the array "this.cards" with 52 instances 
-			for (s = 1; s <= 4; s++) { 							    // of the Card object. It labels the suits and face cards.
+			for (s = 1; s <= 4; s++) { 						// of the Card object. It labels the suits and face cards.
 				for (r = 1; r <= 13; r++) {			   
 					this.cards.push(new Card(r, s));  
 				}
@@ -31,8 +34,6 @@
 				else if (this.cards[i].suit == 4) {
 					this.cards[i].suit = "c";
 				}
-			}
-			for (i = 0; i < this.cards.length; i++) {
 				if (this.cards[i].rank == 1) {
 					this.cards[i].rank = "A";
 				}
@@ -51,11 +52,11 @@
 			}
 		}
 		this.firstFlip = function() {				      // This flips the top card from the deck to the discard pile to 
-			this.discard.unshift(this.cards[0]);	  // start the game.
+			this.discard.unshift(this.cards[0]);		  // start the game.
 			this.cards.shift(this.cards[0]);		  
 		}
-		this.shuffle = function(shoe) {      // I found this function online when I was looking for a way to shuffle arrays.
-			for (var i = shoe.length - 1; i > 0; i--) {        // It will shuffle the cards within the "this.cards" array. 
+		this.shuffle = function(shoe) {					  // Shuffles the card objects within the deck array.      
+			for (var i = shoe.length - 1; i > 0; i--) {        
         		var j = Math.floor(Math.random() * (i + 1));   
         		var temp = shoe[i];
         		shoe[i] = shoe[j];
@@ -125,7 +126,7 @@
 				"Cards left in the deck: " + cardsRemain + "\n\n" +
 				"Last card discarded: " + curDiscard[0].rank + curDiscard[0].suit + "\n" +
 				"Your hand: " + curPlayer.showHand() + "\n\n" +
-				"Choose a card to discard or enter \"d\" to draw a new card:"
+				"Choose a card to discard, enter \"d\" to draw a new card, or enter \"p\" to pass your turn:"
 				)
 			this.guessRank = this.pickCard.charAt(0);
 			this.guessSuit = this.pickCard.charAt(1);
@@ -138,7 +139,7 @@
 				}
 				return handPosition;
 			}
-			this.playCard = function() {								// Handles the movement of cards, checks for 8s, and victory conditions
+			this.playCard = function() {				// Handles the movement of cards, checks for 8s, and victory conditions
 				if (this.guessRank == 8) {
 					curDiscard.unshift(new Card(this.guessRank, this.eight()));
 				}
@@ -157,14 +158,16 @@
 				}
 			}
 
-			if (this.pickCard == "d") {            
+			if (this.pickCard == "d" && curDeck.length != 0) {            
 				curPlayer.hand.unshift(curDeck[0]);
 				curDeck.shift();
 				alert("You have " + curPlayer.hand.length + " cards left \n" + curPlayer.showHand()); 
 			}
-			else if (this.findInHand() != -1 &&      //Check to make sure card chosen is in player's hand
+			else if (this.pickCard == "p") {
+				alert("You have " + curPlayer.hand.length + " cards left \n" + curPlayer.showHand()); 
+			}
+			else if (this.findInHand() != -1 &&      					//Check to make sure card chosen is in player's hand
 				(this.guessRank == 8 || this.guessRank == this.playableRank || this.guessSuit == this.playableSuit)) {
-				alert(this.findInHand());
 				this.playCard();											//Plays the selected card
 			}
 			else {
@@ -175,11 +178,11 @@
 	}
 
 	d = new Deck();							// Create deck obj
-	d.init();										// Fill the deck with card objects
-	d.shuffle(d.cards);					// Shuffle the cards in the deck
+	d.init();								// Fill the deck with card objects
+	d.shuffle(d.cards);						// Shuffle the cards in the deck
 	d.firstFlip();							// Move the top card to the discard pile (would be after the deal irl)
 	
-	g = new CrazyEights();			// Create game obj
+	g = new CrazyEights();					// Create game obj
 	g.playerSetup();						// Prompts for and creates appropriate number of Player objects
 	g.deal(d.cards);						// Deals a starting hand of 7 cards to each player
 	
